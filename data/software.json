@@ -1,0 +1,8 @@
+[
+    {
+    "title": "Aider_Gemini_Automation_Field_Guide",
+    "summary": "This practical guide details automated coding using Aider paired with Gemini models. It covers environment setup (Python virtual environments, mandatory Git initialization, and API key configuration) and execution via CLI or browser GUI. Key slash commands streamline workflows: managing context (/add, /drop), ingesting visuals (/paste), running self-healing test loops (/test), planning system designs (/architect), and safe rollbacks (/undo). Ready-to-use prompt templates demonstrate UI recreation from screenshots, self-healing backend API development, and architectural refactoring.",
+    "file_en": "docs/hardware/Aider_Gemini_Automation_Field_Guide.docx",
+    "file_zh": "docs/hardware/Aider + Gemini 自动化开发速查实战手册.docx"
+  }
+]

@@ -1,0 +1,8 @@
+[
+    {
+    "title": "NFC_Ordering_System_Proposal",
+    "summary": "This solution outlines a lightweight, app-free restaurant self-ordering and hosted checkout system using NTAG213 NFC stickers and static QR codes. Customers tap or scan to open a web ordering page directly via native OS background reading. To prevent tampering, tags are permanently locked to read-only via OTP lock bits. All payment processing is strictly decoupled from the proprietary backend: orders are settled via official PayPay deep links or hosted Stripe/Apple Pay sessions, ensuring zero PCI-DSS compliance burden and preventing transaction spoofing through cryptographically verified webhooks.",
+    "file_en": "docs/hardware/NFC_Ordering_System_Proposal.docx",
+    "file_zh": "docs/hardware/基于 NFC 与二维码的轻量化餐厅点餐及托管支付系统方案.docx"
+  }
+]

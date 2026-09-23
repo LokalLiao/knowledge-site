@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>knowledge share site</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+  <div id="app" class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <header class="mb-8 border-b border-slate-200 pb-6">
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900">Knowledge & Business Repository</h1>
+    </header>
+
+    <!-- Tab 导航 -->
+    <nav class="flex space-x-2 border-b border-slate-200 mb-8">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        @click="switchTab(tab.id)"
+        :class="[
+          'px-5 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
+          currentTab === tab.id
+            ? 'border-indigo-600 text-indigo-600'
+            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+        ]"
+      >
+        {{ tab.label }}
+      </button>
+    </nav>
+
+    <!-- 内容列表 -->
+    <main>
+      <!-- 加载中 -->
+      <div v-if="loading" class="text-center py-12 text-slate-400 text-sm">
+        正在读取知识列表...
+      </div>
+
+      <!-- 错误提示 -->
+      <div v-else-if="error" class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+        {{ error }}
+      </div>
+
+      <!-- 空列表 -->
+      <div v-else-if="items.length === 0" class="text-center py-12 text-slate-400 text-sm">
+        暂无条目
+      </div>
+
+      <!-- 列表卡片 -->
+      <ul v-else class="space-y-4">
+        <li
+          v-for="(item, index) in items"
+          :key="index"
+          class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow transition-shadow flex flex-col md:flex-row md:items-start justify-between gap-6"
+        >
+          <div class="space-y-2 flex-1">
+            <h2 class="text-lg font-semibold text-slate-900 leading-snug">
+              {{ item.title }}
+            </h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              {{ item.summary }}
+            </p>
+          </div>
+
+          <!-- 中/英文下载按钮组 -->
+          <div class="flex-shrink-0 flex items-center gap-2 self-start md:self-center">
+            <!-- 英文版下载 -->
+            <a
+              v-if="item.file_en"
+              :href="resolveFilePath(item.file_en)"
+              download
+              class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition-colors"
+              title="Download English Doc"
+            >
+              <svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              EN 文档
+            </a>
+
+            <!-- 中文版下载 -->
+            <a
+              v-if="item.file_zh"
+              :href="resolveFilePath(item.file_zh)"
+              download
+              class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-colors"
+              title="下载中文文档"
+            >
+              <svg class="w-3.5 h-3.5 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              中文文档
+            </a>
+          </div>
+        </li>
+      </ul>
+    </main>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const tabs = [
+          { id: 'software', label: 'Software' },
+          { id: 'hardware', label: 'Hardware' },
+          { id: 'ai', label: 'AI' }
+        ];
+
+        const currentTab = ref('software');
+        const items = ref([]);
+        const loading = ref(false);
+        const error = ref(null);
+
+        // 统一解析路径：支持全路径 docs/ai/xxx.docx 或纯文件名 xxx.docx
+        const resolveFilePath = (filePath) => {
+          if (!filePath) return '#';
+          if (filePath.startsWith('docs/') || filePath.startsWith('./docs/')) {
+            return filePath;
+          }
+          return `docs/${currentTab.value}/${filePath}`;
+        };
+
+        const loadData = async (tabId) => {
+          loading.value = true;
+          error.value = null;
+          try {
+            const res = await fetch(`./data/${tabId}.json`);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            items.value = await res.json();
+          } catch (err) {
+            error.value = `加载数据失败: 无法读取 ${tabId}.json`;
+            items.value = [];
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        const switchTab = (tabId) => {
+          currentTab.value = tabId;
+          loadData(tabId);
+        };
+
+        onMounted(() => {
+          loadData(currentTab.value);
+        });
+
+        return {
+          tabs,
+          currentTab,
+          items,
+          loading,
+          error,
+          switchTab,
+          resolveFilePath
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

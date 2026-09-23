@@ -1,0 +1,8 @@
+[
+    {
+    "title": "Technical_Report_Qwen3_VL_8B_Menu_Recognition",
+    "summary": "This report evaluates local menu recognition using Qwen3-VL-8B (Q4_K_M) via llama.cpp on an RTX 3060 12GB GPU. The Python pipeline preprocesses high-resolution menu photos with PIL, prompts the model with strict formatting constraints, and parses the output into structured JSON. While it successfully achieves end-to-end extraction on a consumer-grade GPU, inference latency of 15–18 seconds per request and strictly serial execution limit its throughput for high-concurrency commercial production.",
+    "file_en": "docs/ai/Technical_Report_Qwen3_VL_8B_Menu_Recognition.docx",
+    "file_zh": "docs/ai/关于Qwen3-VL-8B模型识别菜单能力的技术说明.docx"
+  }
+]
